@@ -6,6 +6,27 @@ from datetime import datetime
 client = MongoClient("mongodb://localhost:27017/")
 db = client["todo_app"]
 
+# Load custom CSS with background color and image
+def set_background(color, image_url=None):
+    style = f"""
+    <style>
+        .stApp {{
+            background-color: {color};
+        }}
+    """
+    if image_url:
+        style += f"""
+        .stApp {{
+            background-image: url("{image_url}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+        }}
+        """
+    style += "</style>"
+    st.markdown(style, unsafe_allow_html=True)
+
 # User and task management functions
 def get_user(username):
     """Retrieve a user from the database by username."""
@@ -31,9 +52,8 @@ def get_tasks(user_id):
 # User interface functions
 def signup():
     """User sign-up interface."""
-    st.markdown('<div style="background-color: #e0f7fa; padding: 20px; border-radius: 10px;">', unsafe_allow_html=True)
+    set_background("#e0f7fa", "https://example.com/signup-background.jpg")  # Background for Sign Up
     st.markdown('<h2 style="color: teal;">Sign Up</h2>', unsafe_allow_html=True)
-    
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
     confirm_password = st.text_input("Confirm Password", type="password")
@@ -46,14 +66,11 @@ def signup():
         else:
             create_user(username, password)
             st.success("Account created successfully!")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
 
 def login():
     """User login interface."""
-    st.markdown('<div style="background-color: #fce4ec; padding: 20px; border-radius: 10px;">', unsafe_allow_html=True)
+    set_background("#fce4ec", "https://example.com/login-background.jpg")  # Background for Login
     st.markdown('<h2 style="color: teal;">Login</h2>', unsafe_allow_html=True)
-    
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
     
@@ -65,8 +82,6 @@ def login():
             st.success("Logged in successfully!")
         else:
             st.error("Invalid credentials.")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
 
 def task_manager():
     """Task management interface for logged-in users."""
@@ -119,10 +134,11 @@ def task_manager():
 
 def main():
     """Main function to run the Streamlit app."""
-    st.title("Welcome to TaskHive")
+    st.markdown('<h1 style="text-align:center; color: #FF6347;">Welcome to TaskHive</h1>', unsafe_allow_html=True)
     
     if 'user_id' in st.session_state:
-        if st.sidebar.button("Logout"):
+        st.sidebar.markdown('<h2 style="color: #FF6347;">Task Manager</h2>', unsafe_allow_html=True)
+        if st.sidebar.button("Logout"):  # Move the Logout button to the sidebar
             st.session_state.clear()  # Clear session state
             st.success("You have been logged out.")
             st.experimental_rerun()  # Rerun the app to redirect to login
@@ -136,5 +152,6 @@ def main():
             login()
 
 if __name__ == "__main__":
-    main() 
-      
+    main()
+
+
